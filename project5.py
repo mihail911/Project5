@@ -35,17 +35,10 @@ def read_data():
 def partb(county_mat):
     mean_cols = county_mat.mean(axis=0)
 
-    means_sub = county_mat - mean_cols
-    # Mean 0 across cols
-    county_mat -= mean_cols
+    # This is a correct normalization!!
+    normed = (county_mat - county_mat.mean(axis=0)) / county_mat.std(axis=0)
 
-    print "sums before: ", county_mat.mean(axis=0)
-
-    # Normalize across cols
-    l2_norms = LA.norm(county_mat, axis=0)
-    l2_norms = l2_norms.reshape(1, -1)
-    county_mat /= l2_norms
-
+    county_mat = normed
     print "sums: ", county_mat.sum(axis=0)
 
     U, S, V = np.linalg.svd(county_mat, full_matrices=False)
