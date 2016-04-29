@@ -35,22 +35,48 @@ def read_data():
 def partb(county_mat):
     mean_cols = county_mat.mean(axis=0)
 
+    means_sub = county_mat - mean_cols
     # Mean 0 across cols
     county_mat -= mean_cols
+
+    print "sums before: ", county_mat.mean(axis=0)
 
     # Normalize across cols
     l2_norms = LA.norm(county_mat, axis=0)
     l2_norms = l2_norms.reshape(1, -1)
     county_mat /= l2_norms
 
+    print "sums: ", county_mat.sum(axis=0)
+
     U, S, V = np.linalg.svd(county_mat, full_matrices=False)
 
     return U, S, V
 
 
-def partc(U, S, V):
-    v1 = V[:, 0]
+def partc(U, S, V, results_col_names, county_dict):
+    v1 = V[0, :] # Note we are taking rows because SVD returns V transpose
+    absv1 = np.abs(v1)
+    sorted_idx = absv1.argsort()[::-1][:15]
+    print "Sorted idx: ", sorted_idx
 
+    for idx in sorted_idx:
+        if idx <= 8:
+            print results_col_names[idx], " ", v1[idx]
+        else:
+            print county_dict[results_col_names[idx]], " ", v1[idx]
+
+
+def partd(U, S, V, results_col_names, county_dict):
+    v2 = V[1, :] # Note we are taking rows because SVD returns V transpose
+    absv2 = np.abs(v2)
+    sorted_idx = absv2.argsort()[::-1][:15]
+    print "Sorted idx: ", sorted_idx
+
+    for idx in sorted_idx:
+        if idx <= 8:
+            print results_col_names[idx], " ", v2[idx]
+        else:
+            print county_dict[results_col_names[idx]], " ", v2[idx]
 
 
 if __name__ == "__main__":
@@ -59,10 +85,15 @@ if __name__ == "__main__":
 
     # Part b
     U, S, V = partb(county_mat)
-    plt.plot(np.arange(58), S)
-    plt.xlabel("Singular Value Number")
-    plt.ylabel("Singular Value")
-    plt.title("Singule Value vs. Number")
-    plt.show()
+    # plt.plot(np.arange(58), S)
+    # plt.xlabel("Singular Value Number")
+    # plt.ylabel("Singular Value")
+    # plt.title("Singule Value vs. Number")
+    # plt.show()
 
     # Part c
+    #partc(U, S, V, results_cols_names, county_dict)
+
+    # Part d
+
+    partd(U, S, V, results_cols_names, county_dict)
